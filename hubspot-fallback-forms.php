@@ -7,6 +7,7 @@
  * Author:            Ferocious Media
  * License:           GPL-2.0-or-later
  * Text Domain:       hubspot-fallback-forms
+ * Update URI:        https://github.com/jansen-ferocious/hubspot-fallback-forms
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -28,6 +29,41 @@ require_once HFF_DIR . 'includes/class-hff-replacer.php';
 require_once HFF_DIR . 'includes/class-hff-mailer.php';
 require_once HFF_DIR . 'includes/class-hff-submission.php';
 require_once HFF_DIR . 'includes/class-hff-settings.php';
+
+/**
+ * Wire up automatic updates from the GitHub repository via the bundled
+ * Plugin Update Checker library. Bumping the "Version" header above and
+ * pushing to the "main" branch makes every install show an available update.
+ */
+function hff_init_updater() {
+	$puc = HFF_DIR . 'plugin-update-checker/plugin-update-checker.php';
+	if ( ! file_exists( $puc ) ) {
+		return;
+	}
+	require_once $puc;
+
+	if ( ! class_exists( '\\YahnisElsts\\PluginUpdateChecker\\v5\\PucFactory' ) ) {
+		return;
+	}
+
+	$checker = \YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
+		'https://github.com/jansen-ferocious/hubspot-fallback-forms/',
+		HFF_FILE,
+		'hubspot-fallback-forms'
+	);
+
+	// Track the main branch; the version is read from the plugin header there.
+	$checker->setBranch( 'main' );
+
+	// Optional auth for a private repo (unused while the repo is public).
+	// Define HFF_GITHUB_TOKEN in wp-config.php, or filter 'hff_github_token'.
+	$token = defined( 'HFF_GITHUB_TOKEN' ) ? HFF_GITHUB_TOKEN : '';
+	$token = apply_filters( 'hff_github_token', $token );
+	if ( $token ) {
+		$checker->setAuthentication( $token );
+	}
+}
+hff_init_updater();
 
 /**
  * Return plugin settings merged with defaults.

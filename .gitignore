@@ -8,8 +8,10 @@
 
 # Build artifacts
 *.zip
-node_modules/
-vendor/
 
 # Logs
 *.log
+
+# NOTE: do NOT ignore vendor/ — the bundled Plugin Update Checker library
+# ships its own vendor/ (Parsedown, readme parser) that must be committed so
+# update downloads are complete.
