@@ -3,7 +3,7 @@
  * Plugin Name:       HubSpot Fallback Forms
  * Plugin URI:        https://ferociousmedia.com/
  * Description:        Replaces embedded HubSpot forms with self-hosted HTML forms that email submissions via the Mailgun API. A safety net for when HubSpot's form embeds are unavailable.
- * Version:           1.0.0
+ * Version:           1.1.0
  * Author:            Ferocious Media
  * License:           GPL-2.0-or-later
  * Text Domain:       hubspot-fallback-forms
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // No direct access.
 }
 
-define( 'HFF_VERSION', '1.0.0' );
+define( 'HFF_VERSION', '1.1.0' );
 define( 'HFF_FILE', __FILE__ );
 define( 'HFF_DIR', plugin_dir_path( __FILE__ ) );
 define( 'HFF_URL', plugin_dir_url( __FILE__ ) );
@@ -27,8 +27,10 @@ require_once HFF_DIR . 'includes/class-hff-hubspot-sync.php';
 require_once HFF_DIR . 'includes/class-hff-renderer.php';
 require_once HFF_DIR . 'includes/class-hff-replacer.php';
 require_once HFF_DIR . 'includes/class-hff-mailer.php';
+require_once HFF_DIR . 'includes/class-hff-store.php';
 require_once HFF_DIR . 'includes/class-hff-submission.php';
 require_once HFF_DIR . 'includes/class-hff-settings.php';
+require_once HFF_DIR . 'includes/class-hff-submissions-admin.php';
 
 /**
  * Wire up automatic updates from the GitHub repository via the bundled
@@ -74,6 +76,7 @@ function hff_get_settings() {
 	$defaults = array(
 		'enabled'          => 0,
 		'sync_styles'      => 1,
+		'custom_css'       => '',
 		'recipients'       => '',
 		'portal_id'        => '',
 		'region'           => 'na1',
@@ -116,6 +119,16 @@ function hff_init() {
 	// Output-buffer replacement of HubSpot embeds.
 	$replacer = new HFF_Replacer();
 	$replacer->hooks();
+
+	// Stored-submissions viewer + CSV export (admin).
+	$submissions_admin = new HFF_Submissions_Admin();
+	$submissions_admin->hooks();
+
+	// Ensure the submissions table exists (e.g. after a plugin update, where the
+	// activation hook does not re-run).
+	if ( is_admin() ) {
+		HFF_Store::maybe_install();
+	}
 }
 add_action( 'plugins_loaded', 'hff_init' );
 
@@ -129,5 +142,6 @@ function hff_activate() {
 	if ( false === get_option( HFF_OPT_FORMS, false ) ) {
 		add_option( HFF_OPT_FORMS, array() );
 	}
+	HFF_Store::install();
 }
 register_activation_hook( __FILE__, 'hff_activate' );

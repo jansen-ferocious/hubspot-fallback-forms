@@ -84,6 +84,7 @@ class HFF_Settings {
 
 		$out['enabled']         = ! empty( $input['enabled'] ) ? 1 : 0;
 		$out['sync_styles']     = ! empty( $input['sync_styles'] ) ? 1 : 0;
+		$out['custom_css']      = isset( $input['custom_css'] ) ? $this->sanitize_css( $input['custom_css'] ) : '';
 		$out['recipients']      = isset( $input['recipients'] ) ? $this->sanitize_email_list( $input['recipients'] ) : '';
 		$out['portal_id']       = isset( $input['portal_id'] ) ? preg_replace( '/[^0-9]/', '', $input['portal_id'] ) : '';
 		$out['region']          = isset( $input['region'] ) ? preg_replace( '/[^a-z0-9]/', '', strtolower( $input['region'] ) ) : 'na1';
@@ -101,6 +102,19 @@ class HFF_Settings {
 		}
 
 		return $out;
+	}
+
+	/**
+	 * Sanitize custom CSS: unslash and strip any style/script tags so the value
+	 * cannot break out of the <style> block it is printed inside.
+	 *
+	 * @param string $value
+	 * @return string
+	 */
+	protected function sanitize_css( $value ) {
+		$value = wp_unslash( (string) $value );
+		$value = preg_replace( '#</?(?:style|script)\b[^>]*>#i', '', $value );
+		return trim( $value );
 	}
 
 	/**
@@ -144,6 +158,12 @@ class HFF_Settings {
 		}
 		wp_enqueue_style( 'hff-admin', HFF_URL . 'assets/css/hff.css', array(), self::asset_ver( 'assets/css/hff.css' ) );
 		wp_enqueue_script( 'hff-admin', HFF_URL . 'assets/js/hff-admin.js', array( 'jquery' ), self::asset_ver( 'assets/js/hff-admin.js' ), true );
+
+		// Apply the admin's custom CSS in the settings-page Preview.
+		$settings = hff_get_settings();
+		if ( ! empty( $settings['custom_css'] ) ) {
+			wp_add_inline_style( 'hff-admin', $settings['custom_css'] );
+		}
 		wp_localize_script(
 			'hff-admin',
 			'HFFAdmin',
@@ -168,6 +188,11 @@ class HFF_Settings {
 		}
 		wp_enqueue_style( 'hff-front', HFF_URL . 'assets/css/hff.css', array(), self::asset_ver( 'assets/css/hff.css' ) );
 		wp_enqueue_script( 'hff-front', HFF_URL . 'assets/js/hff.js', array(), self::asset_ver( 'assets/js/hff.js' ), true );
+
+		// Admin-defined custom CSS (only loads while the fallback is enabled).
+		if ( ! empty( $settings['custom_css'] ) ) {
+			wp_add_inline_style( 'hff-front', $settings['custom_css'] );
+		}
 		wp_localize_script(
 			'hff-front',
 			'HFFData',
@@ -369,6 +394,15 @@ class HFF_Settings {
 								<?php esc_html_e( 'Match the HubSpot form styling', 'hubspot-fallback-forms' ); ?>
 							</label>
 							<p class="description"><?php esc_html_e( 'Outputs HubSpot\'s CSS class names (so your theme\'s existing form styles apply automatically) and applies each form\'s synced theme colors, fonts, and button style. Turn off to use only the plugin\'s plain default styling.', 'hubspot-fallback-forms' ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="hff_custom_css"><?php esc_html_e( 'Custom CSS', 'hubspot-fallback-forms' ); ?></label></th>
+						<td>
+							<textarea id="hff_custom_css" class="large-text code" rows="8" name="<?php echo esc_attr( HFF_OPT_SETTINGS ); ?>[custom_css]" spellcheck="false" placeholder=".hff-form .hff-submit { background: #c00; }"><?php echo esc_textarea( $s['custom_css'] ); ?></textarea>
+							<p class="description">
+								<?php esc_html_e( 'Optional CSS applied to the fallback forms on the front end (only loads while the fallback is on). Target the form with the .hff-form class, e.g. .hff-form input, .hff-form .hff-submit. This also previews below.', 'hubspot-fallback-forms' ); ?>
+							</p>
 						</td>
 					</tr>
 					<tr>

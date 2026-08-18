@@ -81,11 +81,40 @@ class HFF_Submission {
 
 		$sent = HFF_Mailer::send( $recipients, $subject, $body, $reply_to, $reply_name );
 
-		if ( is_wp_error( $sent ) ) {
-			wp_send_json_error( array( 'message' => __( 'Sorry, there was a problem sending your submission. Please try again later.', 'hubspot-fallback-forms' ), 'detail' => $sent->get_error_message() ), 500 );
+		// Store the submission (in addition to emailing) so leads are never lost
+		// even if email delivery fails during an outage.
+		$stored = HFF_Store::insert(
+			array(
+				'created_at'   => current_time( 'mysql' ),
+				'form_id'      => $form_id,
+				'form_name'    => ! empty( $def['name'] ) ? $def['name'] : $form_id,
+				'page_url'     => $page_url,
+				'ip'           => $this->get_ip(),
+				'email_status' => is_wp_error( $sent ) ? 'failed' : 'sent',
+				'email_error'  => is_wp_error( $sent ) ? $sent->get_error_message() : '',
+				'data'         => array(
+					'fields'   => $collected,
+					'consents' => $consent_rows,
+				),
+			)
+		);
+
+		// As long as the submission was captured (emailed OR stored), report
+		// success so the visitor doesn't retry and the lead isn't lost.
+		if ( is_wp_error( $sent ) && ! $stored ) {
+			wp_send_json_error( array( 'message' => __( 'Sorry, there was a problem submitting the form. Please try again later.', 'hubspot-fallback-forms' ), 'detail' => $sent->get_error_message() ), 500 );
 		}
 
 		wp_send_json_success( array( 'message' => __( 'Thank you. Your submission has been received.', 'hubspot-fallback-forms' ) ) );
+	}
+
+	/**
+	 * Best-effort submitter IP for the stored record.
+	 *
+	 * @return string
+	 */
+	protected function get_ip() {
+		return isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 	}
 
 	/**

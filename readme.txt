@@ -4,7 +4,7 @@ Tags: hubspot, forms, fallback, mailgun
 Requires at least: 5.6
 Tested up to: 6.6
 Requires PHP: 7.2
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 
 A safety net that replaces embedded HubSpot forms site-wide with self-hosted HTML forms emailed through the Mailgun API when HubSpot embeds are unavailable.
@@ -29,6 +29,8 @@ Each submission is emailed with the subject:
 `Hubspot Fallback Submission | <Site Title>`
 and a table of every submitted field plus consent answers. The submitter's email (if present) is set as Reply-To.
 
+Every submission is also **saved to the database** (in addition to being emailed), so nothing is lost if email delivery fails during an outage. View them under **Settings → Fallback Submissions**, where you can filter by form/date, open full details, delete, and **Export CSV** for re-import into HubSpot. Each row records whether its notification email sent or failed. Stored submissions are kept indefinitely.
+
 = Notes =
 
 * **Styling is synced too.** With "Match the HubSpot form styling" enabled (default), the fallback renders with HubSpot's own CSS class names (`hs-form`, `hs-input`, `hs-button`, …) so your theme's existing form CSS applies automatically, and it also emits a scoped style block built from each form's synced theme tokens (button color, font, label/consent colors and sizes, border radius, alignment). Turn it off to use only the plugin's plain default styling.
@@ -39,6 +41,10 @@ and a table of every submitted field plus consent answers. The submitter's email
 * A hidden honeypot field provides basic spam protection.
 
 == Changelog ==
+
+= 1.1.0 =
+* Add database storage for all fallback submissions, with a Fallback Submissions admin viewer (filter, search, detail view, delete) and CSV export.
+* Add a Custom CSS setting applied to the fallback forms on the front end (and in the settings-page preview).
 
 = 1.0.0 =
 * Initial release.
