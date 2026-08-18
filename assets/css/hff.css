@@ -1,0 +1,209 @@
+/* ===== HubSpot Fallback Forms ===== */
+
+/* Front-end form */
+.hff-form-wrap {
+	max-width: 640px;
+	margin: 0 auto 1.5em;
+}
+.hff-form .hff-field {
+	margin-bottom: 1em;
+}
+
+/* Multi-column rows (HubSpot form-columns-2 / form-columns-3), responsive. */
+.hff-form .hff-columns {
+	display: grid;
+	gap: 0 1em;
+}
+.hff-form .hff-columns-2 {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.hff-form .hff-columns-3 {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.hff-form .hff-columns-4 {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+/* Neutralize any inherited float/width so the grid controls the layout. */
+.hff-form .hff-columns > .hff-field,
+.hff-form .hff-columns > .hs-form-field {
+	float: none;
+	width: auto;
+	min-width: 0;
+}
+@media (max-width: 600px) {
+	.hff-form .hff-columns {
+		grid-template-columns: 1fr;
+	}
+}
+.hff-form label,
+.hff-form .hff-group-label {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 0.35em;
+}
+.hff-form input[type="text"],
+.hff-form input[type="email"],
+.hff-form input[type="tel"],
+.hff-form input[type="number"],
+.hff-form input[type="date"],
+.hff-form textarea,
+.hff-form select {
+	width: 100%;
+	padding: 0.6em 0.7em;
+	border: 1px solid #c7ccd1;
+	border-radius: 4px;
+	font-size: 1rem;
+	line-height: 1.4;
+	box-sizing: border-box;
+	background: #fff;
+}
+
+/* Some themes force a fixed input height; let content/padding size the field. */
+.hff-form input,
+.hff-form select,
+.hff-form textarea,
+.hff-form .hff-submit {
+	height: auto;
+}
+.hff-form textarea {
+	resize: vertical;
+	min-height: 110px;
+}
+.hff-form input:focus,
+.hff-form textarea:focus,
+.hff-form select:focus {
+	outline: none;
+	border-color: #2563eb;
+	box-shadow: 0 0 0 2px rgba( 37, 99, 235, 0.2 );
+}
+.hff-form .hff-options {
+	display: flex;
+	flex-direction: column;
+	gap: 0.4em;
+}
+.hff-form .hff-checkbox-label,
+.hff-form .hff-radio-label {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.5em;
+	font-weight: 400;
+	margin-bottom: 0;
+}
+.hff-form .hff-checkbox-label input,
+.hff-form .hff-radio-label input {
+	width: auto;
+	margin-top: 0.25em;
+	flex: 0 0 auto;
+}
+.hff-form .hff-req {
+	color: #dc2626;
+}
+.hff-richtext {
+	margin: 0.5em 0 1em;
+	font-size: 0.9rem;
+	line-height: 1.5;
+}
+.hff-richtext p {
+	margin: 0 0 0.5em;
+}
+.hff-legal {
+	font-size: 0.85rem;
+	color: #555;
+	margin: 1em 0;
+	line-height: 1.5;
+}
+.hff-legal-text {
+	margin-bottom: 0.5em;
+}
+.hff-consent {
+	font-size: 0.9rem;
+}
+.hff-actions {
+	display: flex;
+	align-items: center;
+	gap: 0.75em;
+	margin-top: 0.5em;
+}
+.hff-submit {
+	background: #2563eb;
+	color: #fff;
+	border: none;
+	border-radius: 4px;
+	padding: 0.7em 1.5em;
+	font-size: 1rem;
+	cursor: pointer;
+}
+.hff-submit:hover {
+	background: #1d4ed8;
+}
+.hff-submit:disabled {
+	opacity: 0.6;
+	cursor: default;
+}
+.hff-spinner {
+	display: none;
+	width: 18px;
+	height: 18px;
+	border: 2px solid rgba( 0, 0, 0, 0.15 );
+	border-top-color: #2563eb;
+	border-radius: 50%;
+	animation: hff-spin 0.7s linear infinite;
+}
+.hff-spinner.is-active {
+	display: inline-block;
+}
+@keyframes hff-spin {
+	to { transform: rotate( 360deg ); }
+}
+.hff-message {
+	margin-top: 0.85em;
+	font-size: 0.95rem;
+}
+.hff-message-error {
+	color: #b91c1c;
+}
+.hff-message-success {
+	color: #15803d;
+}
+.hff-success {
+	padding: 1em 1.15em;
+	background: #ecfdf5;
+	border: 1px solid #6ee7b7;
+	border-radius: 4px;
+	color: #065f46;
+}
+
+/* Admin */
+.hff-sync-add {
+	display: flex;
+	align-items: center;
+	gap: 0.6em;
+	flex-wrap: wrap;
+	margin-top: 0.75em;
+}
+.hff-sync-status.is-ok {
+	color: #15803d;
+}
+.hff-sync-status.is-err {
+	color: #b91c1c;
+}
+.hff-toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5em;
+}
+.hff-preview-wrap {
+	margin-top: 20px;
+	max-width: 900px;
+}
+.hff-preview-wrap .title #hff_preview_close {
+	margin-left: 10px;
+	vertical-align: middle;
+}
+.hff-preview-box {
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+	padding: 24px;
+	max-width: 680px;
+}

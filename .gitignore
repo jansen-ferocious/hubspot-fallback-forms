@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+
+# Editor / IDE
+.idea/
+.vscode/
+*.sublime-*
+
+# Build artifacts
+*.zip
+node_modules/
+vendor/
+
+# Logs
+*.log
