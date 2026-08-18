@@ -4,7 +4,7 @@ Tags: hubspot, forms, fallback, mailgun
 Requires at least: 5.6
 Tested up to: 6.6
 Requires PHP: 7.2
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 
 A safety net that replaces embedded HubSpot forms site-wide with self-hosted HTML forms emailed through the Mailgun API when HubSpot embeds are unavailable.
@@ -41,6 +41,9 @@ Every submission is also **saved to the database** (in addition to being emailed
 * A hidden honeypot field provides basic spam protection.
 
 == Changelog ==
+
+= 1.1.1 =
+* Fix: embeds were not replaced when a page builder (e.g. Cornerstone/X) injected a non-breaking space into the embed markup. The detection now tolerates non-breaking/zero-width spaces (uses Unicode-aware matching).
 
 = 1.1.0 =
 * Add database storage for all fallback submissions, with a Fallback Submissions admin viewer (filter, search, detail view, delete) and CSV export.

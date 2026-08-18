@@ -46,16 +46,23 @@ class HFF_Replacer {
 
 		$forms = hff_get_forms();
 
+		// Whitespace class that also tolerates the non-breaking space (\x{00A0}),
+		// zero-width space (\x{200B}) and BOM (\x{FEFF}) that some page builders
+		// (e.g. Cornerstone/X) inject into embed markup. PHP's plain \s only
+		// matches ASCII whitespace unless the /u flag is used, so an injected
+		// nbsp would otherwise stop the pattern from matching the embed.
+		$ws = '[\s\x{00A0}\x{200B}\x{FEFF}]';
+
 		// Match each inline script block that calls hbspt.forms.create({...}).
-		$pattern = '#<script\b[^>]*>\s*hbspt\.forms\.create\s*\(\s*\{.*?\}\s*\)\s*;?\s*</script>#is';
+		$pattern = '#<script\b[^>]*>' . $ws . '*hbspt\.forms\.create' . $ws . '*\(' . $ws . '*\{.*?\}' . $ws . '*\)' . $ws . '*;?' . $ws . '*</script>#isu';
 
 		$result = preg_replace_callback(
 			$pattern,
-			function ( $matches ) use ( $forms ) {
+			function ( $matches ) use ( $forms, $ws ) {
 				$block = $matches[0];
 
 				// Extract the formId from the create() call.
-				if ( ! preg_match( '#formId\s*:\s*["\']([^"\']+)["\']#i', $block, $m ) ) {
+				if ( ! preg_match( '#formId' . $ws . '*:' . $ws . '*["\']([^"\']+)["\']#iu', $block, $m ) ) {
 					return $block; // Can't identify it — leave untouched.
 				}
 				$form_id = $m[1];

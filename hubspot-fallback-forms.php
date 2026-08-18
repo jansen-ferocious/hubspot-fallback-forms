@@ -3,7 +3,7 @@
  * Plugin Name:       HubSpot Fallback Forms
  * Plugin URI:        https://ferociousmedia.com/
  * Description:        Replaces embedded HubSpot forms with self-hosted HTML forms that email submissions via the Mailgun API. A safety net for when HubSpot's form embeds are unavailable.
- * Version:           1.1.0
+ * Version:           1.1.1
  * Author:            Ferocious Media
  * License:           GPL-2.0-or-later
  * Text Domain:       hubspot-fallback-forms
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // No direct access.
 }
 
-define( 'HFF_VERSION', '1.1.0' );
+define( 'HFF_VERSION', '1.1.1' );
 define( 'HFF_FILE', __FILE__ );
 define( 'HFF_DIR', plugin_dir_path( __FILE__ ) );
 define( 'HFF_URL', plugin_dir_url( __FILE__ ) );
